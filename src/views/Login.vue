@@ -80,15 +80,22 @@ import { Options, Vue } from "vue-class-component";
   },
   methods: {
     signin(user: string, password: string): void {
+      console.log(user, password);
       if (user || password) {
         const newUser = localStorage.getItem("user")
-          ? localStorage.getItem("user")
+          ? JSON.parse(localStorage.getItem("user") as any)
           : null;
+        // User admin admin
         if (this.user === "admin" && this.password === "admin") {
-          router.push("home");
+          this.logged();
+          // New user cadastrado
         } else if (newUser) {
-          if (newUser[0] === user && newUser[1] === password) {
-            router.push("home");
+          if (newUser.user === user && newUser.password === password) {
+            this.logged();
+          } else {
+            this.showMessage = true;
+            this.message = "Usuário ou senha inválidos!";
+            return;
           }
         } else {
           this.showMessage = true;
@@ -99,6 +106,14 @@ import { Options, Vue } from "vue-class-component";
         this.showMessage = true;
         this.message = "Favor preencher todos os campos!";
       }
+    },
+    logged(): void {
+      if (localStorage.getItem("logged")) {
+        localStorage.removeItem("logged");
+      }
+      localStorage.setItem("logged", "true");
+
+      router.push("home");
     },
   },
 })
